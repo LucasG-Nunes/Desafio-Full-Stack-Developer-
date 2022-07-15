@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const EstoqueCamisas = require("./Models/EstoqueCamisas");
+const EstoqueCamisasRoutes = require("./Routes/EstoqueCamisaRoutes")
 const App = express();
 App.use(cors());
 
@@ -17,24 +17,8 @@ App.get("/", (req, res) => {
   res.json({ message: "Olá!" });
 });
 //Rotas
-App.post("/EstoqueCamisa", async (req, res) => {
-  const { name, value, category, image } = req.body;
-  if (!name || !value || !category || !image) {
-    res.status(422).json({ error: "Alguma informação faltando!" });
-  }
-  const camisa = {
-    name,
-    value,
-    category,
-    image
-  };
-  try {
-    await EstoqueCamisas.create(camisa);
-    res.status(201).json({ message: "Produto inserido com sucesso" });
-  } catch (error) {
-    res.status(500).json({ error: error });
-  }
-});
+App.use("/EstoqueCamisa",EstoqueCamisasRoutes)
+
 //Conexão ao banco de dados
 mongoose
   .connect(
