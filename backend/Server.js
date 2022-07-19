@@ -1,7 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const EstoqueCamisasRoutes = require("./Routes/EstoqueCamisaRoutes")
+const EstoqueCamisasRoutes = require("./Routes/EstoqueCamisaRoutes");
+const Estoques = require("./Models/Estoques");
 const App = express();
 App.use(cors());
 
@@ -12,13 +13,29 @@ App.use(
   })
 );
 App.use(express.json());
-//teste do endpoint
-App.get("/", (req, res) => {
-  res.json({ message: "Olá!" });
-});
 //Rotas
-App.use("/EstoqueCamisa",EstoqueCamisasRoutes)
+App.use("/EstoqueCamisa", EstoqueCamisasRoutes);
 
+App.get("/Estoques", async (req,res)=>{
+  const estoque = await Estoques.find()
+      res.status(200).json(estoque)
+})
+App.post("/Estoques", async (req, res) => {
+  const { name, produtoEstoque, nomeProduto, valorProduto } = req.body;
+  const estoque = {
+    name,
+    produtoEstoque,
+    nomeProduto,
+    valorProduto,
+  };
+
+  try {
+    await Estoques.create(estoque);
+    res.status(201).json({ message: "Produto inserido com sucesso" });
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+});
 //Conexão ao banco de dados
 mongoose
   .connect(
